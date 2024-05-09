@@ -1,38 +1,42 @@
 // console.log('Phone Hunting')
-const loadPhone = async (searchText) =>{
-
-    const res = await fetch(` https://openapi.programming-hero.com/api/phones?search=${searchText}`);
-
-    const data = await res.json();
-    const phones = data.data;   
-    displayPhones(phones);
+const loadPhone = async (searchText, isShowAll) => {
+  const res = await fetch(` https://openapi.programming-hero.com/api/phones?search=${searchText}`);
+  const data = await res.json();
+  const phones = data.data;
+  displayPhones(phones, isShowAll);
 }
-const displayPhones = phones => {
-    // console.log(phones);
-    // 1.
-    const phoneContainer = document.getElementById('phone-container');
-    // clear phone container cards before adding new cards
-    phoneContainer.textContent = '';
-    // display show all button if there are more than 12 phones
-    const showAllContainer = document.getElementById('show-all-container');
-        if(phones.length > 12){
-          showAllContainer.classList.remove('hidden');
+const displayPhones = (phones, isShowAll) => {
+  console.log(phones);
+  // 1.
+  const phoneContainer = document.getElementById('phone-container');
+  // clear phone container cards before adding new cards
+  phoneContainer.textContent = '';
+  // display show all button if there are more than 12 phones
+  const showAllContainer = document.getElementById('show-all-container');
+  if (phones.length > 12 && !isShowAll) {
+    showAllContainer.classList.remove('hidden');
 
-        }
-        else{
-          showAllContainer.classList.add('hidden');
-        }
-  //  display only first 12 phone
-    phones = phones.slice(0,12);
+  }
+  else {
+    showAllContainer.classList.add('hidden');
+  }
+
+  console.log('is show all', isShowAll);
+  // display only first 12 phones if not show all
+  if (!isShowAll) {
+    //  display only first 12 phone
+    phones = phones.slice(0, 12);
+  }
+
   //  console.log(phones.length);
 
-    phones.forEach(phone => {
-        // console.log(phone);
-        // 2.Create a div
-        const phoneCard = document.createElement('div');
-        phoneCard.classList = `card  bg-gray-100 p-4 shadow-xl`;
-        // 3.set inner HTML
-        phoneCard.innerHTML = `
+  phones.forEach(phone => {
+    // console.log(phone);
+    // 2.Create a div
+    const phoneCard = document.createElement('div');
+    phoneCard.classList = `card  bg-gray-100 p-4 shadow-xl`;
+    // 3.set inner HTML
+    phoneCard.innerHTML = `
         <figure><img src="${phone.image}" alt="Shoes" /></figure>
                     <div class="card-body">
                       <h2 class="card-title">${phone.phone_name}</h2>
@@ -44,29 +48,46 @@ const displayPhones = phones => {
                     </div>
         
         `;
-        // 4.Append child
-        phoneContainer.appendChild(phoneCard);
-    })
-
-    
+    // 4.Append child
+    phoneContainer.appendChild(phoneCard);
+  });
+  // hide loading spinner:
+  toggleLoadingSpinner(false);
 }
-
-
 
 
 // handle search button
-const handleSearch = () => {
+const handleSearch = (isShowAll) => {
+  toggleLoadingSpinner(true);
   const searchField = document.getElementById('search-field');
   const searchText = searchField.value;
-  loadPhone(searchText);
+  loadPhone(searchText, isShowAll);
   // console.log(searchText);
 
 }
+// search handle recap
+// const hadleSearch2 = () =>{
+//   toggleLoadingSpinner(true);
+//   const searchField = document.getElementById('search-field2')
+//   const searchText = searchField.value; 
+//   loadPhone(searchText);
+// }
+//  loading Spinner function
 
-const hadleSearch2 = () =>{
-  const searchField = document.getElementById('search-field2')
-  const searchText = searchField.value; 
-  loadPhone(searchText);
+const toggleLoadingSpinner = (isLoading) => {
+  const loadingSpinner = document.getElementById('loading-spinner');
+  if (isLoading) {
+    loadingSpinner.classList.remove('hidden');
+  }
+  else {
+    loadingSpinner.classList.add('hidden');
+  }
+
+}
+// handle show all
+const handleShowAll = () => {
+
+  handleSearch(true);
 }
 // loadPhone();
 
